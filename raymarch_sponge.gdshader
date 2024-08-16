@@ -1,7 +1,9 @@
 //Uses https://godotshaders.com/shader/raymarch-in-a-box/
 
 shader_type spatial;
-render_mode unshaded, cull_front;
+render_mode unshaded, cull_front, depth_draw_always;
+
+uniform sampler2D DEPTH_TEXTURE: hint_depth_texture, filter_linear_mipmap;
 
 uniform int menger_iterations = 2;
 uniform float cube_size = 2.0;
@@ -71,7 +73,9 @@ void vertex() {
 }
 
 void fragment() {
-
+	
+	float depth = texture(DEPTH_TEXTURE, SCREEN_UV).x;
+	
 	vec3 ro = world_camera;
 	vec3 rd =  normalize(world_position - ro);
 
@@ -87,6 +91,12 @@ void fragment() {
 		vec3 n = GetNormal(p);
 		col = n.rgb;
 	}
-
+	
+	vec3 surfacePoint = ro + rd * d;
+	vec4 viewSpaceSurfacePoint = VIEW_MATRIX * vec4(surfacePoint, 1.);
+	vec4 clipSpaceSurfacePoint = PROJECTION_MATRIX * viewSpaceSurfacePoint;
+	
+	NORMAL = (VIEW_MATRIX * vec4(GetNormal(surfacePoint), 0.)).xyz;
+	
 	ALBEDO = col;
 }

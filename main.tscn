@@ -1,29 +1,60 @@
-[gd_scene load_steps=4 format=3 uid="uid://bl8pve75t8j84"]
+[gd_scene load_steps=11 format=3 uid="uid://bl8pve75t8j84"]
 
 [ext_resource type="Shader" path="res://raymarch_sponge.gdshader" id="1_sh8cw"]
+[ext_resource type="Shader" path="res://mandelbrot.gdshader" id="2_uvgm5"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_fop5s"]
-size = Vector3(10, 10, 10)
-subdivide_width = 10
-subdivide_height = 10
-subdivide_depth = 10
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_smmre"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nfciu"]
 render_priority = 0
 shader = ExtResource("1_sh8cw")
 shader_parameter/menger_iterations = 2
 shader_parameter/cube_size = 2.0
 shader_parameter/show_cross_section = true
 
+[sub_resource type="BoxMesh" id="BoxMesh_fop5s"]
+material = SubResource("ShaderMaterial_nfciu")
+size = Vector3(10, 10, 10)
+subdivide_width = 10
+subdivide_height = 10
+subdivide_depth = 10
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ikmk7"]
+
+[sub_resource type="TorusMesh" id="TorusMesh_r2n1q"]
+material = SubResource("StandardMaterial3D_ikmk7")
+
+[sub_resource type="Gradient" id="Gradient_f6wu2"]
+offsets = PackedFloat32Array(0.148893, 0.261569, 0.327968, 0.891348, 0.945674, 1)
+colors = PackedColorArray(0.0467833, 0.021, 0.14, 1, 0.333364, 0.34736, 0.829618, 1, 0.1539, 0.81, 0.19764, 1, 0.905882, 0.658824, 0.176471, 1, 0.740631, 0.169791, 0.14699, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_t05f1"]
+gradient = SubResource("Gradient_f6wu2")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l17ij"]
+shader = ExtResource("2_uvgm5")
+shader_parameter/offset = Vector2(0, 0)
+shader_parameter/scale = 100.0
+shader_parameter/ITERATIONS = 100
+shader_parameter/gradient = SubResource("GradientTexture1D_t05f1")
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_nfft2"]
+size = Vector2(1000, 1000)
+
 [node name="Main" type="Node3D"]
 
 [node name="Light" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+transform = Transform3D(-0.866024, -0.433016, 0.250001, 0.092105, 0.353285, 0.930971, -0.491447, 0.829269, -0.26607, 2.68029, 0, -9.88762)
 shadow_enabled = true
 
 [node name="Sponge" type="MeshInstance3D" parent="."]
 mesh = SubResource("BoxMesh_fop5s")
-surface_material_override/0 = SubResource("ShaderMaterial_smmre")
 
 [node name="Camera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.819152, 0.573576, 0, -0.573576, 0.819152, 0, 2, 3)
+transform = Transform3D(1, 0, 0, 0, 0.819152, 0.573576, 0, -0.573576, 0.819152, 0.56898, 2, 3.47821)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85014, 0, -3.97006)
+mesh = SubResource("TorusMesh_r2n1q")
+
+[node name="ColorRect" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_l17ij")
+texture = SubResource("PlaceholderTexture2D_nfft2")
