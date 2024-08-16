@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://bl8pve75t8j84"]
+
+[ext_resource type="Shader" path="res://raymarch_sponge.gdshader" id="1_sh8cw"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_fop5s"]
+size = Vector3(10, 10, 10)
+subdivide_width = 10
+subdivide_height = 10
+subdivide_depth = 10
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_smmre"]
+render_priority = 0
+shader = ExtResource("1_sh8cw")
+shader_parameter/menger_iterations = 2
+shader_parameter/cube_size = 2.0
+shader_parameter/show_cross_section = true
+
+[node name="Main" type="Node3D"]
+
+[node name="Light" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Sponge" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_fop5s")
+surface_material_override/0 = SubResource("ShaderMaterial_smmre")
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.819152, 0.573576, 0, -0.573576, 0.819152, 0, 2, 3)

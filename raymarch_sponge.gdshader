@@ -1,0 +1,92 @@
+//Uses https://godotshaders.com/shader/raymarch-in-a-box/
+
+shader_type spatial;
+render_mode unshaded, cull_front;
+
+uniform int menger_iterations = 2;
+uniform float cube_size = 2.0;
+uniform bool show_cross_section = true;
+
+varying vec3 world_camera;
+varying vec3 world_position;
+
+const int MAX_STEPS = 100;
+const float MAX_DIST = 100.0;
+const float SURF_DIST = 1e-2;
+
+#include "res://sdf_class.gdshaderinc"
+
+float GetDist(vec3 p){
+	float d = SDF_AIR;
+	
+	//float sphere = SDFSphere(p, .2);
+	//float torus = SDFTorus(p - vec3(0.0, sin(2.0 * TIME) / 4.0, 0.0), .3, .05);
+	//d = SDFUnion(sphere, torus);
+	//d = SDFIntersection(d, cube);
+	//d = SDFCross(p, 1.0/3.0);
+	//d = SDFDifference(d, cube);
+	
+	//int menger_iterations = 2;
+	//float cube_size = 2.0;
+	d = SDFMengerSponge(p, cube_size, menger_iterations);
+	if (show_cross_section)
+	{
+		float new_cube = SDFFunkyPlane(p) / -2.0;
+		d = SDFDifference(new_cube, d);
+	}
+	return d;
+}
+
+float RayMarch(vec3 ro, vec3 rd) {
+	float dO = 0.0;
+	float dS;
+
+	for (int i = 0; i < MAX_STEPS; i++)
+	{
+		vec3 p = ro + dO * rd;
+		dS = GetDist(p);
+		dO += dS;
+
+		if (dS < SURF_DIST || dO > MAX_DIST)
+			break;
+	}
+	return dO;
+}
+
+vec3 GetNormal(vec3 p) {
+	vec2 e = vec2(SURF_DIST, 0);
+
+	vec3 n = GetDist(p) - vec3(
+		GetDist(p - e.xyy),
+		GetDist(p - e.yxy),
+		GetDist(p - e.yyx)
+	);
+
+	return normalize(n);
+}
+
+void vertex() {
+	world_position = VERTEX;
+	world_camera = (inverse(MODELVIEW_MATRIX) * vec4(0, 0, 0, 1)).xyz; //object space
+}
+
+void fragment() {
+
+	vec3 ro = world_camera;
+	vec3 rd =  normalize(world_position - ro);
+
+	vec3 col;
+
+	float d = RayMarch(ro, rd);
+
+	if (d >= MAX_DIST)
+		discard;
+	else
+	{
+		vec3 p = ro + rd * d;
+		vec3 n = GetNormal(p);
+		col = n.rgb;
+	}
+
+	ALBEDO = col;
+}
