@@ -6,7 +6,7 @@ uniform sampler2D gradient;
 uniform float scale = 3.0;
 uniform int ITERATIONS = 500;
 
-const vec2 internal_offset = vec2(125.0, 125.0);
+const vec2 internal_offset = vec2(125.0);
 
 //https://stackoverflow.com/questions/58166329/why-does-this-mandelbrot-calculation-return-a-circle
 //gets the number of iterations before we decide it is unbounded
@@ -65,7 +65,7 @@ int burning_ship(int num_iterations, vec2 point)
 }
 
 void fragment() {
-	float n = float(burning_ship(ITERATIONS, ((UV - internal_offset) / scale) - offset)) / float(ITERATIONS);
+	float n = float(burning_ship(ITERATIONS, ((UV - internal_offset) / pow(10,scale)) - offset)) / float(ITERATIONS);
 	COLOR.rgb = vec3(1) * (1.0 - n);
 	COLOR = texture(gradient, vec2(n, 0.0));
 }
