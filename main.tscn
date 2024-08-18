@@ -1,8 +1,9 @@
-[gd_scene load_steps=14 format=3 uid="uid://bl8pve75t8j84"]
+[gd_scene load_steps=15 format=3 uid="uid://bl8pve75t8j84"]
 
 [ext_resource type="Shader" path="res://raymarch_sponge.gdshader" id="1_sh8cw"]
 [ext_resource type="Shader" path="res://raymarch_infinite.gdshader" id="2_o6tue"]
 [ext_resource type="Shader" path="res://mandelbrot.gdshader" id="2_uvgm5"]
+[ext_resource type="Script" path="res://fractal.gd" id="4_yovoo"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wq8t1"]
 render_priority = 0
@@ -46,7 +47,7 @@ gradient = SubResource("Gradient_f6wu2")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_l17ij"]
 shader = ExtResource("2_uvgm5")
-shader_parameter/offset = Vector2(1.9, 0)
+shader_parameter/offset = Vector2(0, 0)
 shader_parameter/scale = 4.0
 shader_parameter/ITERATIONS = 2048
 shader_parameter/gradient = SubResource("GradientTexture1D_t05f1")
@@ -74,6 +75,11 @@ transform = Transform3D(1, 0, 0, 0, 0.819152, 0.573576, 0, -0.573576, 0.819152, 
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85014, 0, -8.97006)
 mesh = SubResource("TorusMesh_r2n1q")
 
-[node name="ColorRect" type="Sprite2D" parent="."]
+[node name="2D Scene" type="Node2D" parent="."]
+
+[node name="Fractal" type="Sprite2D" parent="2D Scene"]
 material = SubResource("ShaderMaterial_l17ij")
 texture = SubResource("PlaceholderTexture2D_nfft2")
+script = ExtResource("4_yovoo")
+
+[node name="Camera2D" type="Camera2D" parent="2D Scene"]

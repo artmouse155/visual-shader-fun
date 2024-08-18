@@ -65,7 +65,7 @@ int burning_ship(int num_iterations, vec2 point)
 }
 
 void fragment() {
-	float n = float(burning_ship(ITERATIONS, ((UV - internal_offset) / pow(10,scale)) - offset)) / float(ITERATIONS);
+	float n = float(burning_ship(ITERATIONS, ((UV - internal_offset) / scale) - offset)) / float(ITERATIONS);
 	COLOR.rgb = vec3(1) * (1.0 - n);
 	COLOR = texture(gradient, vec2(n, 0.0));
 }
